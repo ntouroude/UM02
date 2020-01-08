@@ -1,0 +1,175 @@
+<html>
+
+  <style type="text/css">
+html,
+    body {
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+    }
+
+     #textbox { 
+        position: absolute;
+        top: 110px;
+        color: rgba(255, 255, 255, .8);
+        text-align: center;
+        font: 400 16px/20px 'roboto';
+        left: 400px;
+        right: 400px;
+       }
+
+       .title-inner {
+        position: absolute;
+        top: 0px;
+        right: 60px;
+        left: 60px;
+        text-align: center;
+       }
+       .title {
+        position: relative;
+        font:1000 56px/1 'Montserrat';
+        color: rgba(255, 255, 255, .9);
+        z-index: 2;
+        letter-spacing: 1px;
+        display: inline-block;
+       }
+
+    #map {
+        width: 100%;
+        height: 100%;
+        background: black;
+    }
+
+    #menu {
+                border-radius: 4px;
+                padding: 0;
+                width: 300px;
+                font: 12px 'roboto';
+                position: absolute;
+                right: 0px;
+                bottom: 160px;
+    }
+
+    #menu a {
+        margin: 2px 20px 0 0;
+        float: right;
+        vertical-align: baseline;
+        width: 280px;
+        padding: 10px;
+        text-align: center;
+        font: regular 12px "roboto", roboto;
+        line-height: normal;
+        color: rgba(255, 255, 255, .8);
+        border-radius: 3px;
+        border: 1px solid #77777;
+        background: #5555;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    #menu a.selected,
+    #menu a:hover { 
+      background: rgba(255, 255, 255);
+      color: rgba(0, 0,0, .8);
+      font: bold 14px "roboto", roboto;
+    }
+    #menu a:focus { 
+      background: rgba(255, 255, 255);
+      color: rgba(0, 0,0, .8);
+      font: bold 14px "roboto", roboto;
+    }
+
+    .cartodb-layer-selector-box,
+    .cartodb-searchbox,
+    .cartodb-share {
+        display: none !important;
+    }
+  </style>
+  
+<head>
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.11/themes/css/cartodb.css" />
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.11/cartodb.js"></script>
+    
+</head>
+
+<body onload="init()">
+    <div id="map"></div>
+    <div class="header">
+    <div class="title-inner">
+        <h1 class="title">Where is your French paradise?</h1>
+        </div>
+            
+    <div id="textbox">
+        <p>This map shows some components of the quality of life in each French departments in Metropolitan France. Each layer represents a part of population or rate in pourcentage, except the "GLOBAL" one which is an average figure of more components of quality of life established by INSEE. The departments geography and data come from INSEE and concern the period from 2011 to 2013.</p>
+    </div>  
+    <div id='menu'>
+        <a href="#total" id="total" class="button total" onclick="showLayer(this)">GLOBAL</a>
+        <a href="#cinema" id="cinema" class="button cinema" onclick="showLayer(this);">Part of population who has access to a cinema in less than 15min</a>
+        <a href="#sport" id="sport" class="button sport" onclick="showLayer(this)">Part of the 20-60 years old who has a sports licence</a>
+        <a href="#employment" id="employment" class="button employment" onclick="showLayer(this);">Employment rate of the 25-54 years old</a>
+        <a href="#transport" id="transport" class="button transport" onclick="showLayer(this);">share of public transport
+</a>
+
+    </div>
+       <script type="text/javascript">
+    var layer;
+
+//SOURCE
+    function init() {
+      
+            var map_object = new L.Map('map', {
+                center: [34.6541154,-4.4637914], // San Francisco
+                zoom: 4
+            });
+
+
+        var url = 'https://ntouroude.cartodb.com/u/ntouroude/api/v2/viz/bfefbfbe-5fbb-4d92-9fe3-8891fbd36033/viz.json';
+        var visualizacion = cartodb.createVis("map", url, {
+                center: [47.7 , 2], //PARIS
+                zoom: 6
+            })
+
+            .done(function(vis, layers) {
+                layer = layers[1];
+            });
+    }
+
+    function showLayer(layerToShow) {
+
+        //turn off all layers
+    layer.getSubLayers().forEach(function(i) {
+            i.hide()
+        });
+
+    switch (layerToShow.id) {
+            case "total":
+                layer.getSubLayer(6).show();
+                break;
+            case "cinema":
+                layer.getSubLayer(1).show();
+                break;
+            case "sport":
+                layer.getSubLayer(2).show();
+                break;
+            case "employment":
+                layer.getSubLayer(3).show();
+                break;
+            case "transport":
+                layer.getSubLayer(5).show();
+                break;
+        }
+
+        return true;
+    }
+
+
+var densityLegendNon = new cdb.geo.ui.Legend.Density({
+                title: "Part of the population or rate in %",
+                left: "Low", right: "High", colors: [ "#ffc6c4", "#ee919b", "#cc607d", "#9e3963", "#672044" ]
+            });
+            $('#map').append(densityLegendNon.render().el);
+       </script>
+</body>
+
+</html>
